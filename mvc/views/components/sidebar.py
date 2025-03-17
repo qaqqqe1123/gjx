@@ -52,20 +52,20 @@ class Sidebar(ctk.CTkFrame):
                                   text_color=self.header_color)
         tools_label.pack(padx=10, pady=(10, 5), anchor="w")
         
-        # 创建导航按钮框架
+        # 创建系统工具导航按钮框架
         nav_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="transparent", 
                                 border_width=1, border_color=self.border_color)
         nav_frame.pack(padx=10, pady=5, fill="x")
         
-        # 创建导航按钮
-        nav_items = [
+        # 创建系统工具导航按钮
+        system_tools = [
             ("系统清理", "show_system_cleaner"),
             ("注册表清理", "show_registry_cleaner"),
             ("启动项管理", "show_startup_manager"),
             ("服务优化", "show_service_optimizer")
         ]
         
-        for text, command in nav_items:
+        for text, command in system_tools:
             btn = ctk.CTkButton(
                 nav_frame,
                 text=text,
@@ -81,6 +81,60 @@ class Sidebar(ctk.CTkFrame):
             btn.pack(padx=5, pady=2)
             self.nav_buttons[text] = btn
             
+        # 实用工具标签
+        utils_label = ctk.CTkLabel(self.scrollable_frame, text="实用工具", 
+                                  font=ctk.CTkFont(size=16, weight="bold"),
+                                  text_color=self.header_color)
+        utils_label.pack(padx=10, pady=(20, 5), anchor="w")
+        
+        # 创建实用工具导航按钮框架
+        utils_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="transparent", 
+                                  border_width=1, border_color=self.border_color)
+        utils_frame.pack(padx=10, pady=5, fill="x")
+        
+        # 创建实用工具导航按钮
+        utility_tools = [
+            ("网络工具箱", "show_network_toolbox")
+        ]
+        
+        for text, command in utility_tools:
+            btn = ctk.CTkButton(
+                utils_frame,
+                text=text,
+                command=lambda cmd=command: self._on_nav_button_click(cmd),
+                fg_color="transparent",
+                text_color=self.header_color,
+                hover_color=("#d0e3ff", "#b8d4ff"),
+                anchor="w",
+                height=40,
+                width=180,
+                border_width=0
+            )
+            btn.pack(padx=5, pady=2)
+            self.nav_buttons[text] = btn
+            
+        # 添加关于部分
+        about_frame = ctk.CTkFrame(self, fg_color="transparent")
+        about_frame.pack(side="bottom", fill="x", padx=10, pady=10)
+        
+        # 添加分隔线
+        separator = ctk.CTkFrame(about_frame, height=1, fg_color=("#cccccc", "#666666"))
+        separator.pack(fill="x", pady=5)
+        
+        # 添加作者信息
+        author_label = ctk.CTkLabel(about_frame, 
+                                  text="作者: Same0ld", 
+                                  font=ctk.CTkFont(size=12),
+                                  text_color=("#666666", "#999999"))
+        author_label.pack(pady=2)
+        
+        # 添加闲鱼店铺信息
+        shop_label = ctk.CTkLabel(about_frame, 
+                               text="闲鱼店铺: Same0ld", 
+                               font=ctk.CTkFont(size=12),
+                               text_color=("#666666", "#999999"))
+        shop_label.pack(pady=2)
+        
     def set_controller(self, controller):
         """设置控制器"""
         self.controller = controller

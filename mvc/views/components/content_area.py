@@ -3,6 +3,7 @@ from .system_cleaner_page import SystemCleanerPage
 from .registry_cleaner_page import RegistryCleanerPage
 from .startup_manager_page import StartupManagerPage
 from .service_optimizer_page import ServiceOptimizerPage
+from .network_toolbox_page import NetworkToolboxPage
 
 class ContentArea(ctk.CTkFrame):
     def __init__(self, parent):
@@ -64,6 +65,9 @@ class ContentArea(ctk.CTkFrame):
         
         # 服务优化页面
         self.pages["service_optimizer"] = ServiceOptimizerPage(self.scrollable_frame)
+        
+        # 网络工具箱页面
+        self.pages["network_toolbox"] = NetworkToolboxPage(self.scrollable_frame)
         
     def set_controller(self, controller):
         """设置控制器"""
