@@ -19,31 +19,47 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-; 以下行取消注释，以在非管理安装模式下运行（仅为当前用户安装）。
-;PrivilegesRequired=lowest
+; 需要管理员权限
+PrivilegesRequired=admin
 OutputDir=output
 OutputBaseFilename=系统工具箱_setup
-SetupIconFile=assets\icon.ico
-Compression=lzma
+; 移除图标设置，使用默认图标
+;SetupIconFile=assets\icon.ico
+Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
+; 禁用安装目录选择页面的"浏览"按钮
+DisableDirPage=auto
+; 禁用开始菜单文件夹选择页面
+DisableProgramGroupPage=yes
+; 安装程序将不允许安装在包含非ASCII字符的路径下
+AllowUNCPath=false
+; 显示安装详细信息
+ShowLanguageDialog=no
+VersionInfoVersion={#MyAppVersion}
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoCopyright=Copyright (C) 2024 {#MyAppPublisher}
+VersionInfoProductName={#MyAppName}
+VersionInfoProductVersion={#MyAppVersion}
+UninstallDisplayName={#MyAppName}
+SetupLogging=yes
 
 [Languages]
-Name: "chinesesimp"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dist\system_toolbox\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\system_toolbox\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 注意: 不要在任何共享系统文件上使用"Flags: ignoreversion"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
@@ -53,8 +69,27 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 function InitializeSetup(): Boolean;
 begin
   Result := True;
-  // 在这里可以添加安装前的检查代码
+  
+  if not IsAdmin then
+  begin
+    MsgBox('安装程序需要管理员权限才能继续。请以管理员身份运行安装程序。', mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+  
+  if CheckForMutexes('{#MyAppName}_Installation_Mutex') then
+  begin
+    MsgBox('另一个安装实例正在运行。请先完成或取消该安装。', mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+  
+  CreateMutex('{#MyAppName}_Installation_Mutex');
 end;
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{app}" 
+Type: filesandordirs; Name: "{app}"
+
+[CustomMessages]
+chinesesimplified.InstallingService=正在安装系统服务...
+chinesesimplified.UninstallingService=正在卸载系统服务... 
